@@ -1,3 +1,3 @@
 # DEMO
- Hi! This is Demo by Nehue.
+ Hi! This is Demo by Neha.
  Thank you!
