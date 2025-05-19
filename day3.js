@@ -28,3 +28,19 @@ data.splice(1,3,"hello","bye", "world")
 console.log(data)
 var haha= []
 haha.splice()
+
+var days = ['Sunday', 'Monday', 'Tuesday']
+days.push('Thursday','Saturday')
+console.log(days)
+output = days.length
+console.log(output)
+var noumbers = [1,2,3,4,5]
+//slice
+var newNeumbers= noumbers.slice(1,4)
+console.log(newNeumbers)
+/*
+days.push()
+days.pop()
+days.length
+console.log( days[0])
+*/

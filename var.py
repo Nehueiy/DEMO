@@ -31,7 +31,8 @@ bath = 9.50
 
 
 areas = ["hallway", hall, "kitchen", kit, "living room", liv, "bedroom", bed, "bathroom", bath]
-
+arias = areas + ["me", 1.78]
+print(arias)
 # Print areas
 print(type(areas))
 print(areas[-10])
@@ -51,3 +52,22 @@ print (type(x))
 fam=["Hi",9,"Li",8]
 print(fam[0])
 print(fam[-1])
+# Create list areas
+areas = [11.25, 18.0, 20.0, 10.75, 9.50]
+
+# Change this command
+areas_copy = list(areas)
+
+# Change areas_copy
+areas_copy[0] = 5.0
+
+# Print areas
+print(areas)
+def nth_root(n):
+    def actual_root(x):
+        root = x ** (1/n)
+        return 
+root
+    return 
+actual_root
+print(nth_root(3)(27))
