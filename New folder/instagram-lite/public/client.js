@@ -1,60 +1,49 @@
-const socket = io();
+let pc = null;
+let localStream = null;
 
-// UI elements
-const nameEl = document.getElementById('name');
-const roomEl = document.getElementById('roomId');
-const joinBtn = document.getElementById('joinBtn');
-const messagesEl = document.getElementById('messages');
-const msgInput = document.getElementById('msgInput');
-const sendBtn = document.getElementById('sendBtn');
-const startCallBtn = document.getElementById('startCallBtn');
-const hangupBtn = document.getElementById('hangupBtn');
+startCallBtn.addEventListener("click", async () => {
+  startCallBtn.disabled = true;
+  hangupBtn.disabled = false;
 
-let me = null;
-let roomId = null;
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  localAudio.srcObject = localStream;
 
-// === Join Room ===
-joinBtn.addEventListener("click", () => {
-  me = nameEl.value.trim();
-  roomId = roomEl.value.trim();
+  pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
-  if (!me || !roomId) return alert("Enter name + room ID");
+  pc.ontrack = (event) => { remoteAudio.srcObject = event.streams[0]; };
+  pc.onicecandidate = (event) => {
+    if (event.candidate) socket.emit("ice-candidate", { roomId, candidate: event.candidate });
+  };
 
-  socket.emit("joinRoom", { roomId, name: me });
-  addSystem(`You joined room ${roomId}`);
-  startCallBtn.disabled = false;
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  socket.emit("offer", { roomId, offer });
 });
 
-// === Send Message ===
-sendBtn.addEventListener("click", () => {
-  if (!msgInput.value.trim()) return;
+// Handle incoming offer/answer/candidates
+socket.on("offer", async ({ offer }) => {
+  if (!pc) {
+    pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    localAudio.srcObject = localStream;
+    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
-  const msg = { user: me, text: msgInput.value, at: Date.now(), roomId };
-  socket.emit("chatMessage", msg);
-  // also add locally
-  msgInput.value = "";
+    pc.ontrack = (event) => { remoteAudio.srcObject = event.streams[0]; };
+    pc.onicecandidate = (event) => {
+      if (event.candidate) socket.emit("ice-candidate", { roomId, candidate: event.candidate });
+    };
+  }
+  await pc.setRemoteDescription(offer);
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  socket.emit("answer", { roomId, answer });
 });
 
-// === Receive Messages ===
-socket.on("chatMessage", (msg) => {
-  addMessage(msg);
+socket.on("answer", async ({ answer }) => {
+  if (pc) await pc.setRemoteDescription(answer);
 });
 
-// === Helpers ===
-function addMessage({ user, text, at }) {
-  const d = new Date(at);
-  const div = document.createElement("div");
-  div.className = "msg";
-  div.innerHTML = `<div class="meta">${user} • ${d.toLocaleTimeString()}</div><div>${text}</div>`;
-  messagesEl.appendChild(div);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-}
-
-function addSystem(text) {
-  const div = document.createElement("div");
-  div.className = "msg";
-  div.style.opacity = 0.7;
-  div.innerHTML = `<div class="meta">system</div><div>${text}</div>`;
-  messagesEl.appendChild(div);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-}
+socket.on("ice-candidate", async ({ candidate }) => {
+  if (pc) await pc.addIceCandidate(candidate);
+});

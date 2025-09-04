@@ -1,15 +1,3 @@
-import express from "express";
-import http from "http";
-import { Server } from "socket.io";
-
-const app = express();             // <-- define app first
-const server = http.createServer(app);
-const io = new Server(server);
-
-// Serve static files from /public
-app.use(express.static("public"));
-
-// Socket.IO logic
 io.on("connection", (socket) => {
   console.log("New user connected");
 
@@ -18,12 +6,21 @@ io.on("connection", (socket) => {
     console.log(`${name} joined ${roomId}`);
   });
 
+  // Chat
   socket.on("chatMessage", (msg) => {
     io.to(msg.roomId).emit("chatMessage", msg);
   });
-});
 
-// Start server
-server.listen(3000, () => {
-  console.log("Server running at http://localhost:3000");
+  // WebRTC signaling
+  socket.on("offer", ({ roomId, offer }) => {
+    socket.to(roomId).emit("offer", { offer });
+  });
+
+  socket.on("answer", ({ roomId, answer }) => {
+    socket.to(roomId).emit("answer", { answer });
+  });
+
+  socket.on("ice-candidate", ({ roomId, candidate }) => {
+    socket.to(roomId).emit("ice-candidate", { candidate });
+  });
 });
