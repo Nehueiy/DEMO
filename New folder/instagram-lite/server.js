@@ -5,12 +5,10 @@ io.on("connection", (socket) => {
     socket.join(roomId);
     console.log(`${name} joined ${roomId}`);
   });
-
   // Chat
   socket.on("chatMessage", (msg) => {
     io.to(msg.roomId).emit("chatMessage", msg);
   });
-
   // WebRTC signaling
   socket.on("offer", ({ roomId, offer }) => {
     socket.to(roomId).emit("offer", { offer });
