@@ -3,7 +3,7 @@ let localStream = null;
 joinBtn.addEventListener("click", () => {
   me = nameEl.value.trim();
   roomId = roomEl.value.trim();
-
+  console.log("Joining room:", roomId, "as", me); 
   if (!me || !roomId) return alert("Enter name and Room ID");
 
   // Notify server you joined
@@ -14,36 +14,39 @@ joinBtn.addEventListener("click", () => {
 
   addSystem(`You joined room ${roomId}`);
 });
-
 startCallBtn.addEventListener("click", async () => {
+  console.log("Start Call clicked");
   if (!roomId) return alert("Join a room first!");
-
-  startCallBtn.disabled = true;
-  hangupBtn.disabled = false;
-
-  // Reset pc if already exists
-  if (pc) pc.close();
-  pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+  console.log("Room ID:", roomId);
 
   localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  console.log("Got local stream");
+
   localAudio.srcObject = localStream;
 
-  // Add tracks to peer connection
-  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+  pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
 
-  // When remote track arrives
-  pc.ontrack = (event) => { remoteAudio.srcObject = event.streams[0]; };
-
-  // ICE candidates
-  pc.onicecandidate = (event) => {
-    if (event.candidate) socket.emit("ice-candidate", { roomId, candidate: event.candidate });
+  pc.ontrack = (event) => { 
+    console.log("Received remote track");
+    remoteAudio.srcObject = event.streams[0]; 
   };
 
-  // Create offer and send to server
+  pc.onicecandidate = (event) => {
+    if (event.candidate) {
+      console.log("Sending ICE candidate");
+      socket.emit("ice-candidate", { roomId, candidate: event.candidate });
+    }
+  };
+
+  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
   const offer = await pc.createOffer();
+  console.log("Created offer");
   await pc.setLocalDescription(offer);
   socket.emit("offer", { roomId, offer });
+  console.log("Offer sent");
 });
+
 
 hangupBtn.addEventListener("click", () => {
   if (pc) pc.close();
