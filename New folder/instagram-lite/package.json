@@ -1,0 +1,14 @@
+{
+"name": "instagram-lite-chat-call",
+"version": "1.0.0",
+"description": "Minimal texting + calling (WebRTC + Socket.IO)",
+"main": "server.js",
+"type": "module",
+"scripts": {
+"start": "node server.js"
+},
+"dependencies": {
+"express": "^4.19.2",
+"socket.io": "^4.7.5"
+}
+}

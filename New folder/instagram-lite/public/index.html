@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DM + Call — Minimal</title>
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<div class="app">
+<header>
+<h1>Direct Messages + Call</h1>
+<div class="room-join">
+<input id="name" placeholder="Your name" />
+<input id="roomId" placeholder="Room ID (share with friend)" />
+<button id="joinBtn">Join Room</button>
+</div>
+</header>
+
+
+<main class="main">
+<section class="chat">
+<div id="messages" class="messages"></div>
+<div class="composer">
+<input id="msgInput" placeholder="Type a message" />
+<button id="sendBtn">Send</button>
+</div>
+</section>
+
+
+<section class="call">
+<div class="controls">
+<button id="startCallBtn" disabled>Start Call</button>
+<button id="hangupBtn" disabled>Hang Up</button>
+<label><input type="checkbox" id="micToggle" checked /> Mic</label>
+</div>
+<audio id="remoteAudio" autoplay></audio>
+<audio id="localAudio" autoplay muted></audio>
+<div class="hint">Both users must join the same Room ID. Then click <b>Start Call</b>.</div>
+</section>
+</main>
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/client.js" type="module"></script>
+</body>
+</html>
