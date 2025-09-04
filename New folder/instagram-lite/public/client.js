@@ -1,6 +1,5 @@
 let pc = null;
 let localStream = null;
-
 startCallBtn.addEventListener("click", async () => {
   startCallBtn.disabled = true;
   hangupBtn.disabled = false;
