@@ -1,14 +1,1 @@
-{
-"name": "instagram-lite-chat-call",
-"version": "1.0.0",
-"description": "Minimal texting + calling (WebRTC + Socket.IO)",
-"main": "server.js",
-"type": "module",
-"scripts": {
-"start": "node server.js"
-},
-"dependencies": {
-"express": "^4.19.2",
-"socket.io": "^4.7.5"
-}
-}
+{"name":"instagram-lite","version":"1.0.0","description":"Minimal texting + calling (WebRTC + Socket.IO)","main":"server.js","type":"module","scripts":{"start":"node server.js"},"dependencies":{"bcryptjs":"^2.4.3","body-parser":"^2.2.0","express":"^4.21.2","jsonwebtoken":"^9.0.2","socket.io":"^4.8.1","uuid":"^9.0.0"}}

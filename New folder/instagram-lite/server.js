@@ -1,23 +1,37 @@
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+app.use(express.static("public"));
+
 io.on("connection", (socket) => {
-  console.log("New user connected");
+  console.log("New user connected:", socket.id);
 
-  socket.on("joinRoom", ({ roomId, name }) => {
-    console.log(`${name} joined ${roomId}`);
-    socket.join(roomId);
+  // Caller starts a call
+  socket.on("start-call", ({ targetId, offer }) => {
+    io.to(targetId).emit("incoming-call", { from: socket.id, offer });
   });
 
-  socket.on("offer", ({ roomId, offer }) => {
-    console.log("Offer received for room", roomId);
-    socket.to(roomId).emit("offer", { offer });
+  // Receiver accepts
+  socket.on("answer-call", ({ targetId, answer }) => {
+    io.to(targetId).emit("call-accepted", { from: socket.id, answer });
   });
 
-  socket.on("answer", ({ roomId, answer }) => {
-    console.log("Answer received for room", roomId);
-    socket.to(roomId).emit("answer", { answer });
+  // Receiver rejects
+  socket.on("reject-call", ({ targetId }) => {
+    io.to(targetId).emit("call-rejected", { from: socket.id });
   });
 
-  socket.on("ice-candidate", ({ roomId, candidate }) => {
-    console.log("ICE candidate received for room", roomId);
-    socket.to(roomId).emit("ice-candidate", { candidate });
+  // ICE candidate exchange
+  socket.on("ice-candidate", ({ targetId, candidate }) => {
+    io.to(targetId).emit("ice-candidate", { from: socket.id, candidate });
   });
+});
+
+server.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
 });

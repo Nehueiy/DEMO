@@ -1,46 +1,82 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DM + Call — Minimal</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Insta-lite — Auth + DM + Call</title>
 <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-<div class="app">
-<header>
-<h1>Direct Messages + Call</h1>
-<div class="room-join">
-<input id="name" placeholder="Your name" />
-<input id="roomId" placeholder="Room ID (share with friend)" />
-<button id="joinBtn">Join Room</button>
+  <div class="container">
+    <div id="authPanel" class="card">
+      <h2>Welcome — Sign up or Sign in</h2>
+
+      <div class="tabs">
+        <button id="tabSignup" class="active">Sign Up</button>
+        <button id="tabLogin">Sign In</button>
+      </div>
+
+      <div id="signupForm">
+        <input id="su_username" placeholder="Username" />
+        <input id="su_password" placeholder="Password" type="password" />
+        <button id="btnSignup">Sign Up</button>
+        <div id="su_msg" class="msg"></div>
+      </div>
+
+      <div id="loginForm" style="display:none">
+        <input id="li_username" placeholder="Username" />
+        <input id="li_password" placeholder="Password" type="password" />
+        <button id="btnLogin">Sign In</button>
+        <div id="li_msg" class="msg"></div>
+      </div>
+    </div>
+
+    <div id="appPanel" class="card" style="display:none">
+      <header class="appHeader">
+        <div>
+          <strong id="meName"></strong>
+        </div>
+        <div>
+          <button id="btnLogout">Logout</button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <aside class="sidebar">
+          <h3>Users</h3>
+          <div id="usersList" class="list"></div>
+        </aside>
+
+        <section class="content">
+          <div id="chatPanel">
+            <div id="chatHeader" class="chatHeader">Select a user to chat / call</div>
+            <div id="messages" class="messages"></div>
+            <div class="composer">
+              <input id="chatInput" placeholder="Message..." />
+              <button id="sendBtn">Send</button>
+            </div>
+          </div>
+
+          <div id="callUI" style="margin-top:16px">
+            <button id="hangupBtn" disabled>Hang Up</button>
+            <audio id="localAudio" autoplay muted></audio>
+            <audio id="remoteAudio" autoplay></audio>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="incomingCall" style="display:none; position:fixed; bottom:20px; right:20px; background:#fff; padding:15px; border:1px solid #ccc; border-radius:8px;">
+  <p id="callerName">Incoming call...</p>
+  <button id="acceptBtn">Accept</button>
+  <button id="rejectBtn">Reject</button>
 </div>
-</header>
-
-
-<main class="main">
-<section class="chat">
-<div id="messages" class="messages"></div>
-<div class="composer">
-<input id="msgInput" placeholder="Type a message" />
-<button id="sendBtn">Send</button>
+<div id="incomingCall" style="display:none; position:fixed; bottom:20px; right:20px; background:#fff; padding:15px; border:1px solid #ccc; border-radius:8px;">
+  <p id="callerName">Incoming call...</p>
+  <button id="acceptBtn">Accept</button>
+  <button id="rejectBtn">Reject</button>
 </div>
-</section>
-
-
-<section class="call">
-<div class="controls">
-<button id="startCallBtn" disabled>Start Call</button>
-<button id="hangupBtn" disabled>Hang Up</button>
-<label><input type="checkbox" id="micToggle" checked /> Mic</label>
-</div>
-<audio id="remoteAudio" autoplay></audio>
-<audio id="localAudio" autoplay muted></audio>
-<div class="hint">Both users must join the same Room ID. Then click <b>Start Call</b>.</div>
-</section>
-</main>
-</div>
-
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/client.js" type="module"></script>
